@@ -13,3 +13,14 @@
                 threadPool.execute(Runnable run);
             3)使用完之后需要关闭线程池,可调用shutdown()方法
                 threadPool.shutdown();
+                
+                
+```
+//用法
+    Executors.newCachedThreadPool().execute(new Runnable() {
+            @Override
+            public void run() {
+
+            }
+        });
+```
