@@ -1,12 +1,3 @@
-# activity的四种启动模式
-    1)standard 每次启动都new 一个instance（使用场景，程序入口）
-    2)singleTask 
-    判断activity栈是否有一个instance，有就移除target之前的将自己变成栈顶instance（适用场景，程序入口启动页），没有则在栈顶new一个
-    3)singleTop
-    判断栈顶是否有一个instance，有就复用，没有就new（适用场景，消息推送跳转） 
-    4)singleInstance 开辟私有的task，完全独立于程序的其他activity的task(独立页面)
-    
-    
 # 综合分析
 
 > Activity: 共有3个，Activity1 、 Activity2 、Activity3
@@ -61,3 +52,13 @@
 > 启动App时生成了Activity1的实例，所以再跳转至Activity1是不会重新创建实例的，然后跳转Activity2Activity3时，Activity栈没有实例则都创建一个，由3→1时，由于Activity栈已经有Activity1的实例了，所以复用Activity1并置于栈顶，1→2也是同理。
 
 > 点击返回就是出栈顺序了，跳转结束后栈的顺序是 2→1→3（栈顶开始），所以2先出栈，再到1，再到3。
+
+
+# activity的四种启动模式
+> 1.standard 每次启动都new 一个instance，无论Activity里之前是否有实例的存在。Activity可能又多个实例。
+
+> 2.singleTask 先判断栈顶有没有该Activity的实例，如果有则复用，如果该Activity的实例不在栈顶，则移除该Activity前所有的对象，使其自己成为栈顶。如果没有实例，则在栈顶new一个实例。Activity可能又多个实例。
+
+> 3.singleTop 如果栈顶里面有，就复用，没有就new一个。Activity可能又多个实例。
+
+> 4.singleInstance 如果栈里面有则复用并置于栈顶，如果没有就new一个，只有一个实例。每个Activity都只有唯一的一个实例。
