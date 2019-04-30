@@ -33,6 +33,25 @@ exmple：
 
 > 可以在 project structure 里面去修改 android plugin version
 
+
+# 分享一个项目Dex分包失败的案例
+
+> android plugin tools 版本号:2.3.3
+
+> 配置了dexOptions
+
+> 开启了multidex enabled
+
+> application 继承了 MultiDexApplication
+
+失败原因:
+
+> 项目开启了jackOptions enabled true
+
+> 使用jdk 1.8进行编译
+
+总结：
+> 其实开启了jackOptions也分出了2个dex，但是无论怎么修改dexOptions的配置都不会起效。不清楚究竟是否是因为jackOptions影响了dexOptions，还是因为使用jdk1.8的原因。
     
     
 
