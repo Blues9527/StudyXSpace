@@ -43,5 +43,7 @@
 
 - [Cache及其子类解读](http://note.youdao.com/noteshare?id=97909ce0b63f7edb4864ca57c65be5c4&sub=B5494AC2B04A4B2EB6F1ED2E0F468604) 
 
+- [ImageLoader类解读](：http://note.youdao.com/noteshare?id=f508a92a31d4659704dfd3dada50220e&sub=2CC37CBD636147AFB2C3A9CFE3F4FBF7) 
+
 
 
