@@ -274,7 +274,8 @@ public synchronized void put(String key, Entry entry) {
             VolleyLog.d("Could not clean up file %s", file.getAbsolutePath());
         }
     }
-    
+
+//如果缓存文件存在的话，通过key去remove掉缓存 
  @Override
     public synchronized void remove(String key) {
         boolean deleted = getFileForKey(key).delete();
@@ -285,6 +286,75 @@ public synchronized void put(String key, Entry entry) {
                     key, getFilenameForKey(key));
         }
     }
+
+//删除多余的缓存至最大的大小
+private void pruneIfNeeded() {
+        //如果当前的总缓存大小小于最大的缓存大小，则不符合条件，直接return
+        if (mTotalSize < mMaxCacheSizeInBytes) {
+            return;
+        }
+        ...
+
+        //用于记录前后的大小
+        long before = mTotalSize;
+        //记录闪退文件的数量
+        int prunedFiles = 0;
+        //记录用时
+        long startTime = SystemClock.elapsedRealtime();
+
+        //通过迭代器的方式遍历
+        Iterator<Map.Entry<String, CacheHeader>> iterator = mEntries.entrySet().iterator();
+        while (iterator.hasNext()) {
+            //取出一个entry
+            Map.Entry<String, CacheHeader> entry = iterator.next();
+            //通过getValue()方法拿到value值
+            CacheHeader e = entry.getValue();
+            //通过cacheheader的key值删除指定的文件
+            boolean deleted = getFileForKey(e.key).delete();
+            if (deleted) {
+            //如果删除成功，则减去缓存头的大小
+                mTotalSize -= e.size;
+            } else {
+               //打点记录删除失败
+               ...
+            }
+            //删除后从迭代器里remove掉
+            iterator.remove();
+            //每删除一个文件，这里++
+            prunedFiles++;
+
+            //如果当前缓存的大小 小于 最大缓存的大小的90%，则跳出循环
+            if (mTotalSize < mMaxCacheSizeInBytes * HYSTERESIS_FACTOR) {
+                break;
+            }
+        }
+        //打点，记录删除的文件数量，删除的字节数量，用时等
+        ...
+    }   
+
+private void putEntry(String key, CacheHeader entry) {
+//如果当前缓存map里面没有该key
+    if (!mEntries.containsKey(key)) {
+        //当前总缓存size直接加上缓存项的size
+        mTotalSize += entry.size;
+    } else {
+    //否则就通过key去找出旧的缓存头
+        CacheHeader oldEntry = mEntries.get(key);
+        //当前总缓存size加上传入的缓存头的大小减去旧的缓存头的大小
+        mTotalSize += (entry.size - oldEntry.size);
+    }
+    mEntries.put(key, entry);
+}
+
+//移除通过key来标识身份的缓存项
+private void removeEntry(String key) {
+    CacheHeader removed = mEntries.remove(key);
+    if (removed != null) {
+    //移除后重新赋值当前缓存的大小
+        mTotalSize -= removed.size;
+    }
+}
+
 ```
 
 CacheHeader类是DiskBasedCache的一个静态内部类
