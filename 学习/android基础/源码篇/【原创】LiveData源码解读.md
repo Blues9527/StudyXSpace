@@ -7,34 +7,81 @@
 
 ```
 构造函数传进来一个LicfeCycleOwner
+LifecycleBoundObserver(@NonNull LifecycleOwner owner, Observer<T> observer) {
+            super(observer);
+            mOwner = owner;
+        }
 
 重写了shouldBeActive()，onStateChanged(),isAttachedTo(),detachObserver()等方法。
 
-shouldBeActive()返回LifeCycle.isAtLeast(STARTED)
+@Override
+        boolean shouldBeActive() {
+		//调用LifeCycle.isAtLeast(STARTED),判断是否应该被激活
+            return mOwner.getLifecycle().getCurrentState().isAtLeast(STARTED);
+        }
 
-@params LifecycleOwner Lifecycle.Event
-onStateChanged()
-判断是否处于DESTROYED状态，是的话则移除Observer，否则执行父类的activeStateChanged()方法。
+@Override
+public void onStateChanged(LifecycleOwner source, Lifecycle.Event event) {
+	//判断是否处于DESTROYED状态
+    if (mOwner.getLifecycle().getCurrentState() == DESTROYED) {
+		//移除Observer
+        removeObserver(mObserver);
+        return;
+    }
+	//执行父类的activeStateChanged()方法
+    activeStateChanged(shouldBeActive());
+}
 
-isAttachedTo()返回LifeCycleOwner是否一致；
 
-detachObserver()移除Observer；
+@Override
+boolean isAttachedTo(LifecycleOwner owner) {
+	//返回LifeCycleOwner是否一致；
+    return mOwner == owner;
+}
+
+
+@Override
+void detachObserver() {
+	//移除Observer；
+    mOwner.getLifecycle().removeObserver(this);
+}
 ```
 
 @Class ObserverWrapper
-是一个私有的抽象类，LifecycleBoundObserver和AlwaysActiveObserver都是它的具体实现类。
+是一个私有的抽象类(包装类)，LifecycleBoundObserver和AlwaysActiveObserver都是它的具体实现类。
 
 ```
-抽象方法
-shouldBeActive() boolean；
+shouldBeActive() boolean；//抽象方法
 
-@params LifecycleOwner
-isAttachedTo() boolean; //默认返回false
+boolean isAttachedTo(LifecycleOwner owner) {
+			//默认返回false
+            return false;
+        } 
 
 detachObserver() void;//空方法
 
-@params boolean
-activeStateChanged() void;
+void activeStateChanged(boolean newActive) {
+    if (newActive == mActive) {
+		//已处于激活状态，return
+        return;
+    }
+	//赋值是否要激活
+    mActive = newActive;
+	//判断当前是否处于闲置状态，活跃数量为0则处于闲置状态
+    boolean wasInactive = LiveData.this.mActiveCount == 0;
+	//根据是否需要激活进行+1或者-1
+    LiveData.this.mActiveCount += mActive ? 1 : -1;
+	//同时满足，目前处于闲置状态且需要激活才为true
+    if (wasInactive && mActive) {
+		//执行激活操作
+        onActive();
+    }
+    if (LiveData.this.mActiveCount == 0 && !mActive) {
+        onInactive();
+    }
+    if (mActive) {
+        dispatchingValue(this);
+    }
 ```
 
 @Class AlwaysActiveObserver
