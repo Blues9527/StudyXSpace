@@ -44,3 +44,11 @@
 - 从寓意上来看，两种写法都是无限循环
 - 从效率上看，while(true)每次循环要判断循环条件,for(;;)循环没有判断，理论上节省机器指令
  > 无论是for(;;)还是while(true),在Java中都是优化成goto没区别,结果来看,两种方法经过编译优化后,是一样的效果.
+
+### String、StringBuilder&StringBuffer
+
+String：适用于少量的字符串操作的情况
+
+StringBuilder：适用于单线程下在字符缓冲区进行大量操作的情况
+
+StringBuffer：适用多线程下在字符缓冲区进行大量操作的情况
