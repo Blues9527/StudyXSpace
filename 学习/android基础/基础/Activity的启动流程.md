@@ -101,7 +101,7 @@ startActivityForResult()
 
 Instrumentation.execStartActivity()
 
-//IActivityManager本质是一个binder
+//IActivityManager是由AIDL生成的接口文件
 (IActivityManager)ActivityManager.getService().startActivity()
 
 //通过Binder去请求ActivityManagerService
