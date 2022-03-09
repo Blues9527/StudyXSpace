@@ -21,12 +21,6 @@ http://note.youdao.com/noteshare?id=f628cd0ffce267cf1d4c9f4c881117ff
 ### 事件分发机制解读及滑动冲突解决思路
 http://note.youdao.com/noteshare?id=1404fcef25d0944c272ed9a3a90b29f4
 
-### Socket的一个简单使用Demo
-http://note.youdao.com/noteshare?id=ea8f1e6afb74facb01c3fe5b0b87f228
-
-### Android一些热门的网络请求框架的简单使用Demo
-http://note.youdao.com/noteshare?id=0b5d045720baa9d9da8b7d47a6891b94
-
 ### 动态代理与静态代理
 http://note.youdao.com/noteshare?id=d009b4acfea5bb9d402bc59d70b88a4e
 
